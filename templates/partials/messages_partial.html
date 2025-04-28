@@ -1,0 +1,85 @@
+{% load static %}
+
+<!-- Область сообщений -->
+<!-- <div class="row flex-grow-1 overflow-y-auto" style="background-color: black;">
+    <div class="col py-3" style="background-color: black;" id = "div-all-messages-in-chat"> -->
+        <!-- Сообщение от других -->
+
+      {% for message in messages %}
+
+        <div div-message-id = "{{message.id}}" class="row mb-3  
+          {% if user.username == message.to_user.username %} 
+          bg-primary rounded-3 
+          {% endif %}" >
+
+
+            <div class="col-auto" >
+                
+                <img 
+                  {% if message.is_anonim %}
+                    src="{% static 'img/avatar/anonim.png' %}"
+                    onclick= "message_to_user_set('Инкогнито'); return false;" 
+                  {% else %}
+                    src="{{message.from_user.avatar_pic.url}}"
+                    name= "{{message.from_user.username}}"
+                    onclick= "message_to_user_set(this.getAttribute('name')); return false;"
+
+                  {% endif %}
+                    class="image-from"  alt="From">
+
+            </div>
+            
+              <div class="col">
+      
+              
+                  <div
+                  
+                  {% if user.username == message.from_user.username %}
+                    class="p-3 shadow-sm rounded-3  message-wrapper bg-primary"                      
+                  {% else %} 
+                    class="p-3 shadow-sm rounded-3  message-wrapper"                       
+                  {% endif %}
+                    onclick="showContextMenu(event, 'menu-{{ message.id }}')"> <!-- Всплывающее меню УДАЛИТЬ ОТВЕТИТЬ-->
+                 
+                  
+
+<!--  Красивый зеленый цвет #75b798 !important -->
+                    {% if message.is_anonim %}
+                    <div class="text-muted small user-name-in-chat" >Инкогнито
+                    {% else %}
+                    <div class="text-muted small user-name-in-chat">{{message.from_user.username}}
+                    {% endif %}
+
+                    {% if message.to_user != NULL%}
+                    для {{message.to_user.username}} 
+                    {% endif %}
+                    </div>
+
+                    {% if message.picture != "" %}
+                    <div class="picture-in-message">
+                       <img  src = "{{ message.picture.url }}"  alt="picture">
+                    </div>
+                    {% endif %}
+
+                    <div>{{message}}</div>
+                    <div class="text-end text-muted small mt-2">{{message.time_send}}</div>
+
+                    <div class="message-context-menu" id="menu-{{ message.id }}">
+                      {% if user.username == message.from_user.username %}
+                      <button onclick="deleteMessage('{{ message.id }}' )">🗑️ Удалить</button>
+                      {% endif %}
+                      <button onclick="replyToMessage('{{ message.from_user.username }}')">↩️ Ответить</button>
+                    </div>
+
+
+
+                </div>
+            </div>
+        </div>
+
+        {% endfor %}
+
+      
+        
+    <!-- </div>
+</div> -->

@@ -1,0 +1,42 @@
+<header >
+    <nav class="navbar navbar-expand-lg bg-body-tertiary my-color-for-partials">
+      <div class="container-fluid">
+        <!-- <a class="navbar-brand" href="#">Список сеансов</a> -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse " id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link " href="#">Кафе</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Контакты</a>
+            </li>
+            
+            {% if user.username == 'admin' %}
+            <li class="nav-item">
+              <a class="nav-link" href="#">Администратору</a>
+            </li>
+            {% else %}
+              <a class="nav-link" href="#">Администратору</a>
+            {% endif %}
+
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'signup' %}">Зарегестрироваться</a>
+            </li>
+          </ul>
+
+          <div class="ms-auto">
+            {% if user.is_authenticated %}
+                <span class="me-3">{{ user.lastname }} {{ user.firstname }}</span>
+                <a href="#" class="btn btn-dark">Выйти</a>
+            {% else %}
+                <a href="#" class="btn btn-dark">Войти</a>
+            {% endif %}
+          </div>
+
+        </div>
+      </div>
+    </nav>
+  </header>

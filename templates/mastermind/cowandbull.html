@@ -1,0 +1,269 @@
+<!-- Страничка игры КОРОВ - БЫКОВ с колонкой игры и колонкой семейного чата -->
+ 
+{% extends 'base.html' %}
+{% load static %}
+    
+{% block content %}
+
+
+<div class="container-fluid"> <!-- Организация таблицы -->
+  <div class="row"> <!-- ОСНОВНАЯ строка-->
+    <!-- *** Колонка игры --- Колонка игры --- Колонка игры --- Колонка игры --- Колонка игры *** -->
+    <div class="col-12 col-md-8 game-column"> <!-- Колонка игры-->    
+      <!--<div class="table-game">  чтобы таблица продолжалась после автозаполнения   -->
+      <div class="table-game"  >     
+
+        <div class="container mt-5">
+          <h1>Игра в "КОРОВ-БЫКОВ" <button type="button" class="btn btn-primary" id ='openModalButton'  > Начать новую игру</button></h1> 
+          <h4>Загадано число из : <span id="selectedNumber"></span> цифр. Вам нужно их отгадать.</h4>
+          <h4>В подбираемом числе нельзя прописать одинаковые цифры</h4>
+          <h4>"Коровы" - количество цифр угаданных, но не на своем месте</h4>
+          <h4>"Быки" - количество цифр угаданных и на своем месте.</h4>    
+        </div>        
+                
+        <div class="table-row">
+          <div class="table-col">ЧИСЛО</div>
+          <div class="table-col">
+            <img class = "cow-bull-image" src="{% static 'img/system/cow.png' %}" alt = 'cow'> /  
+            <img class = "cow-bull-image" src="{% static 'img/system/bull.png' %}" alt = 'bull'>
+          </div>
+          <div class="table-col">ШАГ</div>
+        </div>
+
+        <!-- ***  Здесь строится таблица игры КОРОВ БЫКОВ  ***
+          
+          функцией function addRow(id,userNUM, cowBull)
+          let divTableInteractive = document.getElementById("div-table-interactive")
+           ...
+          divTableInteractive.insertAdjacentElement('beforebegin', divRow);
+
+        -->
+                  
+        <div class="table-row " id = "div-table-interactive">
+          <div class="table-col align-left">
+            <input id="userInput" autocomplete="off" class="table-input" aria-label="userInput">
+          </div>
+          <div class="table-col">
+          <span id = 'timetext'> </span> <span id = 'time'></span>  
+          </div>
+          <div class="table-col">
+            <button class="btn btn-primary" onclick="cowBullUserTry(); return false;">Проверить</button>
+          </div>
+        </div>
+                
+      </div> <!-- /div class="table-game"-->
+    </div> <!-- /div class="col-12 col-md-8 game-column"-->
+    <!-- ***КОНЕЦ Колонка игры --- Колонка игры --- Колонка игры --- Колонка игры --- Колонка игры *** -->
+
+
+
+    <!-- *** Колонка чата --- Колонка чата --- Колонка чата --- Колонка чата --- Колонка чата ***  -->
+    <div class="col-12 col-md-4"> <!-- Колонка чата-->
+      <div class="container-fluid vh-100 d-flex flex-column">
+
+        <!-- Заголовок чата -->
+        <div class="row py-3  border-bottom " style='background-color: blsck;' >
+          <div class="col d-flex align-items-center">
+            <h4 class="mb-0">Семейный чатик</h4>
+          </div>
+        </div>
+      
+        <!-- Область сообщений -->
+        <div class="row flex-grow-1 overflow-y-auto" style="background-color: black;"> <!-- Область сообщений -->
+          <div class="col py-3" style="background-color: black;" id = "div-all-messages-in-chat">
+            
+            <!-- Сообщения -->  
+            {% for message in messages %}
+            
+            <!-- Область АВАТАР и СООБЩЕНИЕ-->
+              <!-- Если сообщение отправлено текущЕМУ пользователЮ, то аватар и сообщение выделяются синим цветом -->
+              <!-- Для возможности удалить сообщение или ответить на него* используется div-message-id = message.id-->
+                <!-- *сейчас ответ на сообщение работает как сообщение пользователю отправившего сообщение -->
+            <div div-message-id = "{{message.id}}" class="row mb-3  
+              {% if user.username == message.to_user.username %} 
+                bg-primary rounded-3 
+              {% endif %}" >
+
+              <!-- АВАТАР пользователя отправившего сообщение или инкогнито -->
+              <div class="col-auto" >
+                <img 
+                  {% if message.is_anonim %}
+                    src="{% static 'img/avatar/anonim.png' %}"
+                    onclick= "message_to_user_set('Инкогнито'); return false;" 
+                  {% else %}
+                    src="{{message.from_user.avatar_pic.url}}"
+                    name= "{{message.from_user.username}}"
+                    onclick= "message_to_user_set(this.getAttribute('name')); return false;" 
+                  {% endif %}
+                    class="image-from"  alt="From">
+                  <!-- При клике на пользователя появляется возможность отправить сообщение для него в общем чате-->
+              </div>
+              
+              <!-- СООБЩЕНИЕ от пользователя--> 
+              <div class="col">
+
+                <!-- Если сообщение отправлено текущим пользователем, то  сообщение выделяется синим цветом ------- -->
+                <div                    
+                {% if user.username == message.from_user.username %}
+                  class="p-3 shadow-sm rounded-3  message-wrapper bg-primary"                      
+                {% else %} 
+                  class="p-3 shadow-sm rounded-3  message-wrapper"                       
+                {% endif %}
+                  onclick="showContextMenu(event, 'menu-{{ message.id }}')"> <!-- Всплывающее меню УДАЛИТЬ ОТВЕТИТЬ-->   
+                  
+                  <div
+                  {% if message.is_anonim %}
+                    class="text-muted small user-name-in-chat"> Инкогнито
+                  {% else %}
+                    class="text-muted small user-name-in-chat" > {{message.from_user.username}}
+                  {% endif %} 
+
+                  <!-- Если сообщение отправлено для определенного пользователя -->
+                  {% if message.to_user != NULL%}
+                  для {{message.to_user.username}} 
+                  {% endif %}
+                  </div>
+
+                  <!-- Если сообщение с картинкой -->
+                  {% if message.picture != "" %}
+                  <div class="picture-in-message">
+                     <img  src = "{{ message.picture.url }}"  alt="picture">
+                  </div>
+                  {% endif %}
+                  
+                  <!-- текст сообщения -->
+                  <div>{{message}}</div>
+                  
+                  <!-- дата и время отправки сообщения -->
+                  <div class="text-end text-muted small mt-2">{{message.time_send}}</div>
+                  
+                  <!-- всплываеющее меню Удалить (если отправлено текущим пользователем) или Ответить-->
+                  <div class="message-context-menu" id="menu-{{ message.id }}">
+                    {% if user.username == message.from_user.username %}
+                    <button onclick="deleteMessage('{{ message.id }}' )">🗑️ Удалить</button>
+                    {% endif %}
+                    <button onclick="replyToMessage('{{ message.from_user.username }}')">↩️ Ответить</button>
+                  </div>
+
+
+
+                </div>
+                <!--  --------------------------------------------------------------------------------------------  -->
+
+              </div> <!-- /div class="col" -->
+            </div> <!-- /div div-message-id = "{{message.id}}" class="row mb-3 ... -->
+
+            {% endfor %}
+
+          </div> <!-- /div class="col py-3" style="background-color: black;" id = "div-all-messages-in-chat" -->
+        </div> <!-- /div class="row flex-grow-1 overflow-y-auto" style="background-color: black;" -->
+        <!-- Конец Область сообщений -->
+
+
+
+
+        <!-- Форма ввода сообщения  -->
+        <form class="input-group mt-3" method="post" id="chatForm" enctype="multipart/form-data"> <!-- Форма ввода сообщения  -->
+          {% csrf_token %}
+          
+          <div class="row bg-black border-top py-3 " style="padding-right: 0;">
+
+            <!-- Предпросмотр загружаемого изображения -->
+            <div class ="row">
+              <div class = "col">                       
+                <img src="" id="preview" style="display: none;" alt="Preview" class = "preview-img">
+              </div>
+            </div>
+
+            <!-- Поле ввода сообщения (можно отменить отправку конкретному пользователю)-->
+            <div class="row">
+              <div class="col">
+                <input hidden="true" type="text"  id="input-message-to-username" name="message_to">
+                <span id="message-to-username" >  </span> <span id="unset-message-to-username" 
+                  style="cursor: pointer;" onclick="message_to_user_unset(); return false;"></span>
+              </div>
+            </div>
+            
+            <!-- тег DIV сливается с тегом INPUT-->
+            <div class="row row-like-input">
+              <div class="col">    
+                <div class="input-group  div-like-input" >
+                  <img src="{% static 'img/system/upload_image.png' %}"  alt="upimg"  onclick ="upload_image()" class="upload-image-icon" >
+                  <!-- отправляемое изображение, если есть-->
+                  <input type="file" id="fileInput"   name="image"   accept="image/*"   hidden  onchange="previewImage(this); ">
+                
+                  <!-- <label for="input_message">Введите сообщение:</label> -->
+                  <input type="text" name ="message" class="form-control " placeholder="Введите сообщение..." aria-label="message">
+                  <button class="btn btn-primary" type="submit">     
+                    <img src="{% static 'img/system/send_mail.png' %}"  width="30" height="30" alt="send">
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Отправить инкогнито-->
+            <div class="row">
+              <div class ="col">
+                <input type="checkbox" name="is_anonim"  value="true" aria-label="message"><i> отправить инкогнито</i>
+              </div>
+            </div>
+            
+          </div>
+
+        </form>
+  
+      </div> <!-- /div class="container-fluid vh-100 d-flex flex-column" -->
+    </div> <!-- /div class="col-12 col-md-4" -->
+    <!--КОНЕЦ Колонка чата-->
+                   
+                   
+
+  </div> <!-- /div class="row" --> 
+  <!--КОНЕЦ ОСНОВНАЯ строка-->
+                
+</div> <!-- /div class="container-fluid"-->
+<!-- КОНЕЦ Организация таблицы -->
+
+
+
+
+
+<!-- *** Модальное окно для выбора количества цифр в загадываемом числе (от 3 до 6) *** -->
+<div class="modal fade" id="numberModal" tabindex="-1" aria-labelledby="numberModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="numberModalLabel">Выберите число от 3 до 6</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      </div>
+      <div class="modal-body">
+        <div class="number-selector">
+            <div class="arrow-button" id="increaseButton">▲</div>
+            <div class="number-display" id="numberDisplay">3</div>
+            <div class="arrow-button" id="decreaseButton">▼</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+        <button type="button" class="btn btn-primary" id="confirmButton">Подтвердить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</body>
+
+
+<script src="{% static 'js/messenger.js' %}"></script>
+<script src="{% static 'js/cowandbull.js' %}"></script>
+<script src="{% static 'js/cowandbull_choose_number_length.js' %}"></script>
+
+
+<!-- <script src="{% static 'js/display.js' %}"></script> -->
+<!-- <script src="{% static 'js/function.js' %}"></script> -->
+<!-- <script src="{% static 'js/script.js' %}"></script> -->
+<!-- <script src="{% static 'js/events.js' %}"></script> -->
+
+
+{% endblock %}
