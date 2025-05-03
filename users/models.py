@@ -10,7 +10,7 @@ from cow_and_bull.models import Game
 class User(AbstractUser):
   # встроенный first_name не может повторяться- это исключительный никнейм
   my_name = models.CharField(max_length=100) # Настоящее имя пользователя
-  # age_now = models.PositiveSmallIntegerField(null=True) # Null=True примерный Возраст далее высчитываем относительно даты регистрауии
+  age_now = models.PositiveSmallIntegerField(null=True) # Null=True примерный Возраст далее высчитываем относительно даты регистрауии
   # Если пользователь укажет лишь свой возраст сейчас, то поле должно автоматически пересчитсяться. 
   birth_day = models.DateField(null=True, blank=True)
   # rating_in_game = models.ForeignKey(InGameRating,null=True,blank=True,on_delete=models.CASCADE)
@@ -21,7 +21,7 @@ class User(AbstractUser):
   # Рейтинг пользователя. Рейтинг значения его сообщений и комментариев. ТАкже включает рейтинг в каждой игре.
   # rating = models.OneToOneField(UserRating, on_delete=models.CASCADE)  # Удаляет UserRating при удалении пользователя
   
-  avatar_pic = models.ImageField(upload_to='media/img/avatar',default='static/img/avatar/none.bmp')
+  avatar_pic = models.ImageField(upload_to='img/avatar',default='img/avatar/none.bmp')
   little_about = models.TextField(max_length=500) # Коротко о себе
   status = models.CharField(max_length=20) # Статус  - заметка о себе сейчас
 
@@ -75,7 +75,7 @@ class InGameRating(models.Model):
   number_of_points = models.PositiveIntegerField(default=0) # Количество очков в игре
   
   # Скрин наиболее интересной игры
-  picture = models.ImageField(upload_to='media/img/gamescreens',null=True,blank=True, default="")
+  picture = models.ImageField(upload_to='img/gamescreens',null=True,blank=True, default="")
   # game = models.OneToOneField(Game,on_delete=models.CASCADE) # Сама игра на которую составлен рейтинг
   # Рейтинг может быть составлен на несколько игр для разных пользователей.
   game = models.ForeignKey(Game,on_delete=models.CASCADE) # Сама игра на которую составлен рейтинг
@@ -104,7 +104,7 @@ class Message(models.Model):
   message = models.TextField()
   from_user = models.ForeignKey(User, related_name='from_user', on_delete=models.CASCADE)
   to_user = models.ForeignKey(User, related_name='to_user', on_delete=models.CASCADE,null=True,blank=True)
-  picture = models.ImageField(upload_to='media/img/message',null=True,blank=True, default="")
+  picture = models.ImageField(upload_to='img/message',null=True,blank=True, default="")
 
   # null=True — разрешает хранить NULL в базе данных.
   # blank=True — позволяет оставлять поле пустым в формах и админке.
@@ -186,7 +186,7 @@ class BaseList(models.Model):
 
 class WishList(BaseList):
   # Визуализация желания
-  picture = models.ImageField(upload_to='media/img/wishes',null=True,blank=True, default="")
+  picture = models.ImageField(upload_to='img/wishes',null=True,blank=True, default="")
   
 
 class AvoidanceList(BaseList):

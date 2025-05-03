@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+     <h1 class="mb-5">Регистрация</h1>
+    <form action="{% url 'signup' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+       <!-- <div class="form-floating mb-3">
+            {{ form.firstname }}
+            <label for="floatingFirstname">Имя</label>
+        </div> -->
+        
+        <!-- <div class="form-floating mb-3">
+            {{ form.username }}
+            <label for="floatingUsername">Ввш логин/ник</label>
+        </div> -->
+        <!-- 
+         <div class="form-floating mb-3">
+            {{ form.age_now }}
+            <label for="number_field">Ваш возраст</label>
+        </div> 
+
+        <div class="form-floating mb-3">
+            {{ form.avatar_pic }}
+            <label for="image_field">Картинка на аватарку</label>
+        </div>
+
+        <div class="form-floating mb-3">
+            {{ form.password }}
+            <label for="floatingPassword">Пароль</label>
+        </div>
+        <div class="form-floating mb-3">
+            {{ form.confirm_password }}
+            <label for="floatingPasswordConfirm">Подтверждение пароля</label>
+        </div>-->
+
+        {{ form.as_p }}
+        
+        <div>   {% if form.instance.avatar_pic %}
+            <img src="{{ form.instance.avatar_pic.url }}" alt="Аватар" width="100">
+                {% endif %}
+        </div>
+        
+
+        <div class="d-flex pt-4">
+            <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+        </div>
+    </form>
+{% endblock %}

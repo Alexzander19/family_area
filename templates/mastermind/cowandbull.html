@@ -2,7 +2,7 @@
  
 {% extends 'base.html' %}
 {% load static %}
-    
+   
 {% block content %}
 
 
@@ -254,10 +254,13 @@
 
 </body>
 
-
+<!-- // в cowandbull_choose_number_length.js определена Функция для извлечения параметра из URL
+function getQueryParam(param) 
+ -->
+<script src="{% static 'js/cowandbull_choose_number_length.js' %}"></script>
 <script src="{% static 'js/messenger.js' %}"></script>
 <script src="{% static 'js/cowandbull.js' %}"></script>
-<script src="{% static 'js/cowandbull_choose_number_length.js' %}"></script>
+
 
 
 <!-- <script src="{% static 'js/display.js' %}"></script> -->

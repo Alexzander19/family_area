@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // alert('Вы выбрали число: ' + currentNumber);
         // modal.hide();
         // Перенаправляем на целевую страницу с параметром
-        window.location.href = `/deep?count_numbers=${currentNumber}`;
+        window.location.href = `/game?count_numbers=${currentNumber}`;
     });
 });
 

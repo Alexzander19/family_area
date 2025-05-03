@@ -97,7 +97,7 @@ function deleteMessage(messageId) {
   // Отправка запроса на удаление 
   if(confirm('Вы уверены что хотите удалить сообщение?')) {
          
-    let str = '/user/delete-message/' + messageId+'/';
+    let str = '/users/delete-message/' + messageId+'/';
     fetch(str, {
         method: 'POST',
         headers: {
@@ -135,7 +135,7 @@ document.getElementById('chatForm').addEventListener('submit', async function(e)
   const csrftoken = getCookie('csrftoken');
   
   try {
-    const response = await fetch("/user/send_message/", {
+    const response = await fetch("/users/send_message/", {
       method: 'POST',
       headers: {
           "X-CSRFToken": csrftoken
@@ -163,7 +163,7 @@ document.getElementById('chatForm').addEventListener('submit', async function(e)
 });
 
 function refreshMessages() {
-  fetch('/user/get-messages-html/')
+  fetch('/users/get-messages-html/')
     .then(response => response.text())
     .then(html => {
         const container = document.getElementById('div-all-messages-in-chat');
@@ -188,7 +188,7 @@ document.addEventListener('click', () => {
 });
 
 
-// Обновлять сообщения каждые 5 секунд
+//Обновлять сообщения каждые 5 секунд
 setInterval(refreshMessages, 5000);
 
 
