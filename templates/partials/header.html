@@ -29,10 +29,10 @@
 
           <div class="ms-auto">
             {% if user.is_authenticated %}
-                <span class="me-3">{{ user.lastname }} {{ user.firstname }}</span>
-                <a href="#" class="btn btn-dark">Выйти</a>
+                <span class="me-3">{{ user.last_name }} {{ user.first_name }}</span>
+                <a href="{% url 'signout' %}" class="btn btn-dark">Выйти</a>
             {% else %}
-                <a href="#" class="btn btn-dark">Войти</a>
+                <a href="{% url 'signin' %}" class="btn btn-dark">Войти</a>
             {% endif %}
           </div>
 

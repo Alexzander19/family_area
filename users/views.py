@@ -1,7 +1,7 @@
-from django.shortcuts import render
+import datetime
 
-# Create your views here.
-
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.http import JsonResponse
 
@@ -14,6 +14,36 @@ from django.template.loader import render_to_string
 
 # Create your views here.
 
+# Функции рассчета примерной даты рождения, если пользователь указал
+
+    
+  
+  
+def approximate_birthdate(age: int) -> datetime.date:
+  today = datetime.date.today()
+  
+  try:
+      # Пытаемся вычесть возраст из текущего года, сохраняя день и месяц
+      # timedelta - учитываем, что день рождения был не сегодня, а например 3 месяца назад
+      birthdate = today.replace(year=today.year - age) - datetime.timedelta(days=90)
+  except ValueError:
+      # Обработка 29 февраля (если текущий день 29 февраля, а год не високосный)
+      # timedelta - учитываем, что день рождения был не сегодня, а например 3 месяца назад
+      birthdate = datetime.date(today.year - age, 3, 1) - datetime.timedelta(days=90)
+  
+  return birthdate
+
+# Если пользователь не указал дату рождения, но указал возраст высчитываем примерную дату рождения.
+def find_birth_day(age:int):
+  if age > 0  or age > 1000 :
+    # self.birth_day = self.approximate_birthdate(age)
+    return approximate_birthdate(age)
+  else:
+    # self.birth_day = None
+    return None
+
+
+
 def signup(request):
   if request.method == 'POST':
     form = SignupForm(request.POST, request.FILES)
@@ -25,6 +55,18 @@ def signup(request):
       if form.cleaned_data['avatar_pic']:# Проверяем что картинка- картинка
         user.avatar_pic = form.cleaned_data['avatar_pic']
 
+      # Обработка даты рождения и возраста
+      
+      birth_day = form.cleaned_data.get('birth_day')
+      age = form.cleaned_data.get('age')
+
+      # Если указан возраст, то высчитываем примерную дату рождения,
+      # Если не указан возраст, то birth_day либо None либо любая указанная дата.
+      if age != None:
+          user.birth_day = find_birth_day(age)
+      else:
+        user.birth_day = birth_day
+
       user.save()
       return redirect('signin')
   else:
@@ -32,15 +74,35 @@ def signup(request):
   return render(request, 'users/signup.html', {'form': form})
 
 
-def userlist(request):
-  users=User.objects.all()
+def signin(request):
+  if request.method == "POST":
+    username = request.POST.get("username")
+    password = request.POST.get("password")
+    
+    # Аутентификация пользователя
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+      login(request, user)  # Вход пользователя
+      return redirect('game')  # Перенаправление после успешного входа
+    else:
+      # Ошибка входа
+      return render(request, 'users/signin.html', {'error': 'Неверный логин или пароль'})
+  return render(request, 'users/signin.html')
 
-  return render(request,'users/userslist.html',{'users': users})
+def signout(request):
+  # Выходим из системы
+  logout(request)
+  # Перенаправляем пользователя на страницу входа
+  return redirect('game')
 
-def messages(request):
-  messages = Message.objects.all()
 
+# def userlist(request):
+#   users=User.objects.all()
 
+#   return render(request,'users/userslist.html',{'users': users})
+
+# def messages(request):
+#   messages = Message.objects.all()
 
 
 def send_message(request):
@@ -104,7 +166,7 @@ def delete_message(request, message_id):
 
 
 # рендерит HTML с использованием шаблона messages_partial.html
-
+@login_required(login_url='signin')
 def get_messages_html(request):
     messages = Message.objects.all()
     context = {'messages': messages}

@@ -9,8 +9,11 @@ from cow_and_bull.models import Game
 
 class User(AbstractUser):
   # встроенный first_name не может повторяться- это исключительный никнейм
-  my_name = models.CharField(max_length=100) # Настоящее имя пользователя
-  age_now = models.PositiveSmallIntegerField(null=True) # Null=True примерный Возраст далее высчитываем относительно даты регистрауии
+  # my_name = models.CharField(max_length=100) # Настоящее имя пользователя
+  # age_now = models.PositiveSmallIntegerField(null=True,blank=True) #Возраст на момент регистрации. далее высчитываем относительно даты регистрации. можно не указывать
+  # это поле не нужно хранить в БД, оно нужно для вычисления примерной даты рождения.
+
+  # birth_day не обязательное для заполгнения поле
   # Если пользователь укажет лишь свой возраст сейчас, то поле должно автоматически пересчитсяться. 
   birth_day = models.DateField(null=True, blank=True)
   # rating_in_game = models.ForeignKey(InGameRating,null=True,blank=True,on_delete=models.CASCADE)
@@ -23,44 +26,28 @@ class User(AbstractUser):
   
   avatar_pic = models.ImageField(upload_to='img/avatar',default='img/avatar/none.bmp')
   little_about = models.TextField(max_length=500) # Коротко о себе
-  status = models.CharField(max_length=20) # Статус  - заметка о себе сейчас
+  status_now = models.CharField(max_length=20,default="") # Статус  - заметка о себе сейчас
 
-
- 
   @property
   def age_now(self):
-    if not self.birth_day:
-        return None
-    return (datetime.date.today() - self.birth_day).days // 365
-  
-  
-  @staticmethod
-  def approximate_birthdate(age: int) -> datetime.date:
+    if self.birth_day == None: # День рождения или возраст пользователь может не указывать
+      return None
+    
     today = datetime.date.today()
-    
-    try:
-        # Пытаемся вычесть возраст из текущего года, сохраняя день и месяц
-        # timedelta - учитываем, что день рождения был не сегодня, а например 3 месяца назад
-        birthdate = today.replace(year=today.year - age) - datetime.timedelta(days=90)
-    except ValueError:
-        # Обработка 29 февраля (если текущий день 29 февраля, а год не високосный)
-        # timedelta - учитываем, что день рождения был не сегодня, а например 3 месяца назад
-        birthdate = datetime.date(today.year - age, 3, 1) - datetime.timedelta(days=90)
-    
-    return birthdate
-  
-  
-  def set_birth_day(self,age:int):
-    if age > 0  or age > 1000 :
-      self.birth_day = self.approximate_birthdate(age)
-    else:
-      self.birth_day = None
-
-  
-
+    age = today.year - self.birth_day.year
+    # Проверяем, был ли уже день рождения в текущем году
+    if (today.month, today.day) < (self.birth_day.month, self.birth_day.day):
+        age -= 1
+    return age
+ 
 
   def __str__(self):
-    return self.username + ' ' + str(self.age_now) + ' лет'
+
+    age = ""
+    if self.age_now != None:
+      age = str(self.age_now) + ' лет'
+
+    return self.username + ' ' + age
   
 # Рейтинг пользователя в играх
 class InGameRating(models.Model):

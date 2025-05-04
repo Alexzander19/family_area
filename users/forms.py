@@ -2,52 +2,64 @@ from django import forms
 from users.models import User, Message
 
 class SignupForm(forms.ModelForm):
+
   confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={
     'class': 'form-control',
-    'id': 'floatingPasswordConfirm',
+    'id': 'psswordConfirm',
     'placeholder': 'Подтверждение пароля',
     'autocomplete': 'off',
     'required': True
   }))
 
+  age = forms.IntegerField(widget=forms.NumberInput(attrs={
+    'class': 'form-control',
+    'id': 'age',
+    'placeholder': 'Возраст',
+    'required': False
+  }),
+        help_text="Укажите возраст, если не вводите дату рождения"
+    )
+
   class Meta:
     model = User
-    fields = ['first_name', 'username' ,'avatar_pic','password'] #'age_now'
+    fields = ['first_name','birth_day', 'username' ,'avatar_pic','password'] #'age_now'
     widgets = {
+      
       'first_name': forms.TextInput(attrs={
         'class': 'form-control',
-        'id': 'floatingFirstname',
+        'id': 'firsName',
         'aria-label': 'Ваше имя',
-        'placeholder': 'placeholder зачем он',
+        'placeholder': 'Ваше имя',
         'required': True,
       }),
       
       'username': forms.TextInput(attrs={
         'class': 'form-control',
-        'id': 'floatingUsername',
-        'placeholder': 'placeholder Логин пользователя',
-        'aria-label': 'Логин пользователя',
+        'id': 'UserName',
+        'placeholder': 'Ваш Логин',
+        'label': 'Логин пользователя',
         'required': True,
       }),
 
-      # 'age_now': forms.NumberInput (attrs={
-      #   'class': 'form-control',
-      #   'id': 'floatingUserage',
-      #   'placeholder': 'placeholder возраст',
-      #   'required': True
-      # }),
+      'birth_day': forms.DateInput (attrs={
+        'class': 'form-control',
+        'id': 'birthDay',
+        'placeholder': 'дата рождения (можно не указывать)',
+        'required': False
+      }),
 
       'avatar_pic': forms.FileInput(attrs={
         'class': 'form-control',
-        'id': 'image_field',
-        'placeholder': 'placeholder картинка',
+        'id': 'imageField',
+        'arial-label': 'картинка на аватар (можно не ставить)',
+        'placeholder': 'картинка на аватар (можно не ставить)',
         'required': False
 
       }),
       'password': forms.PasswordInput(attrs={
         'class': 'form-control',
-        'id': 'floatingPassword',
-        'placeholder': 'placeholder Пароль',
+        'id': 'pssword',
+        'placeholder': 'Пароль',
         'required': True,
         
       }),

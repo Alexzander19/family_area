@@ -6,6 +6,8 @@ from . import views
 urlpatterns = [
 
     path('signup/', views.signup, name='signup'),
+    path('signin/', views.signin, name = 'signin'),
+    path('signout/',views.signout,name = 'signout'),
     # path('userlist/',views.userlist,name='userlist'),
     path('send_message/',views.send_message,name='send_message'),
     path('delete-message/<int:message_id>/', views.delete_message, name='delete_message'),
