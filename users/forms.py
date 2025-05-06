@@ -15,9 +15,10 @@ class SignupForm(forms.ModelForm):
     'class': 'form-control',
     'id': 'age',
     'placeholder': 'Возраст',
-    'required': False
+    # 'required': False должно быть опредено снаружи виджета
   }),
-        help_text="Укажите возраст, если не вводите дату рождения"
+    required=False,
+    help_text="Укажите возраст, если не вводите дату рождения"
     )
 
   class Meta:

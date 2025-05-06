@@ -6,6 +6,9 @@
 // При нажатии на иконку загрузить фото, вызывает окно выбора изображения
 // и размещает фото сверху над вводом сообщения (выше span сообщение для)
 //<img onclick ="upload_image()">
+
+const GROUP_NAME = null;
+
 function upload_image(){
 
   document.getElementById('fileInput').click();
@@ -96,7 +99,7 @@ function deleteMessage(messageId) {
 
   // Отправка запроса на удаление 
   if(confirm('Вы уверены что хотите удалить сообщение?')) {
-         
+                
     let str = '/users/delete-message/' + messageId+'/';
     fetch(str, {
         method: 'POST',
@@ -127,39 +130,47 @@ function deleteMessage(messageId) {
   }
 }
 
+// window.addEventListener('load', function() {
+//   document.getElementById('chatForm').addEventListener('submit', function(e) {
+
 // Фунуция отправки сообщения.
-document.getElementById('chatForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  
-  const formData = new FormData(this);
-  const csrftoken = getCookie('csrftoken');
-  
-  try {
-    const response = await fetch("/users/send_message/", {
-      method: 'POST',
-      headers: {
-          "X-CSRFToken": csrftoken
-      },
-      body: formData
-    });
-    
-    if(response.ok) {
-      // Очистка формы
-      this.reset();
-      document.getElementById('preview').style.display = 'none';
-      document.getElementById('message-to-username').textContent = '';
-      
-      // Динамическое добавление сообщения
-      const data = await response.json();
-      // addNewMessage(data);
-      // updateAllChat(data); // переписываем все сообщения чата
-      refreshMessages();
-    } else {
-        alert('Ошибка при отправке сообщения');
+window.addEventListener('load', function() { 
+  document.getElementById('chatForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const csrftoken = getCookie('csrftoken');
+    // const group_name = this.dataset.customArg;
+    // const group_name = e.submitter.dataset.arg;
+    const group_name = GROUP_NAME
+
+    try {
+      const response = await fetch("/users/send_message/" + group_name + '/', {
+        method: 'POST',
+        headers: {
+            "X-CSRFToken": csrftoken
+        },
+        body: formData
+      });
+
+      if(response.ok) {
+        // Очистка формы
+        this.reset();
+        document.getElementById('preview').style.display = 'none';
+        document.getElementById('message-to-username').textContent = '';
+
+        // Динамическое добавление сообщения
+        const data = await response.json();
+        // addNewMessage(data);
+        // updateAllChat(data); // переписываем все сообщения чата
+        refreshMessages();
+      } else {
+          alert('Ошибка при отправке сообщения');
+      }
+    } catch(error) {
+        console.error('Error:', error);
     }
-  } catch(error) {
-      console.error('Error:', error);
-  }
+  });
 });
 
 function refreshMessages() {
@@ -187,7 +198,7 @@ document.addEventListener('click', () => {
   });
 });
 
-
+refreshMessages()
 //Обновлять сообщения каждые 5 секунд
 setInterval(refreshMessages, 5000);
 

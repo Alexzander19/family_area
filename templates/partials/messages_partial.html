@@ -5,6 +5,12 @@
     <div class="col py-3" style="background-color: black;" id = "div-all-messages-in-chat"> -->
         <!-- Сообщение от других -->
 
+<script>
+  // Передаем данные из Django-контекста в глобальную переменную
+  const GROUP_NAME = {group_name} ;
+</script>
+
+
       {% for message in messages %}
 
         <div div-message-id = "{{message.id}}" class="row mb-3  
@@ -41,9 +47,6 @@
                   {% endif %}
                     onclick="showContextMenu(event, 'menu-{{ message.id }}')"> <!-- Всплывающее меню УДАЛИТЬ ОТВЕТИТЬ-->
                  
-                  
-
-<!--  Красивый зеленый цвет #75b798 !important -->
                     {% if message.is_anonim %}
                     <div class="text-muted small user-name-in-chat" >Инкогнито
                     {% else %}
@@ -78,6 +81,11 @@
         </div>
 
         {% endfor %}
+
+
+
+       
+  
 
       
         

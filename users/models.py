@@ -6,6 +6,24 @@ from django.contrib.auth.models import AbstractUser
 from cow_and_bull.models import Game
 
 
+# Какая-либо группа созданная пользователем, для включения в нее других пользователей
+class MyGroup(models.Model):
+  name = models.CharField(max_length=100, unique=True)
+  about = models.TextField()
+  # Данные группы доступны всем пользователям.
+  is_open = models.BooleanField(default=False)
+
+  def __str__(self):
+    return self.name
+
+class MyStatus(models.Model):
+  name = models.CharField(max_length=15)
+
+  def __str__(self):
+    return self.name
+
+
+
 
 class User(AbstractUser):
   # встроенный first_name не может повторяться- это исключительный никнейм
@@ -49,6 +67,17 @@ class User(AbstractUser):
 
     return self.username + ' ' + age
   
+
+class UserInGroup(models.Model):
+  user = models.ForeignKey(User,on_delete=models.CASCADE)
+  group = models.ForeignKey(MyGroup,on_delete=models.CASCADE)
+  # # Запрет удаления Статуса, пока есть группы с этим статусом
+  status = models.ForeignKey(MyStatus,on_delete=models.PROTECT)
+
+  def __str__(self):
+    return f" {self.user} in {self.group} is {self.status} "
+
+
 # Рейтинг пользователя в играх
 class InGameRating(models.Model):
 
@@ -98,6 +127,9 @@ class Message(models.Model):
   time_send = models.DateTimeField(auto_now_add=True)
   
   is_anonim = models.BooleanField(default=False)
+
+  # Сообщения отправляются в группах и читать их можно,только если в группе состоишь
+  group = models.ForeignKey(MyGroup, on_delete=models.CASCADE, null=True, blank=True,default=None)
   
   def __str__(self):
     return self.message
@@ -180,21 +212,4 @@ class AvoidanceList(BaseList):
   # Что делать, чтобы этого не произошло.
   what_to_do = models.TextField()
 
-
-# Какая-либо группа созданная пользователем, для включения в нее других пользователей
-class MyGroup(models.Model):
-  name = models.CharField(max_length=100)
-  about = models.TextField()
-  # Данные группы доступны всем пользователям.
-  is_open = models.BooleanField(default=False)
-
-class MyStatus(models.Model):
-  name = models.CharField(max_length=15)
-
-
-class UserInGroup(models.Model):
-  user = models.ForeignKey(User,on_delete=models.CASCADE)
-  group = models.ForeignKey(MyGroup,on_delete=models.CASCADE)
-  # # Запрет удаления Статуса, пока есть группы с этим статусом
-  status = models.ForeignKey(MyStatus,on_delete=models.PROTECT) 
 

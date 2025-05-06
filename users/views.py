@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.http import JsonResponse
 
-from users.models import User, Message
+from users.models import MyGroup, User, Message, UserInGroup
 from users.forms import SignupForm
 
 # для функции get_messages_html
@@ -35,7 +35,7 @@ def approximate_birthdate(age: int) -> datetime.date:
 
 # Если пользователь не указал дату рождения, но указал возраст высчитываем примерную дату рождения.
 def find_birth_day(age:int):
-  if age > 0  or age > 1000 :
+  if age > 0  and age < 2025 :
     # self.birth_day = self.approximate_birthdate(age)
     return approximate_birthdate(age)
   else:
@@ -100,12 +100,17 @@ def signout(request):
 #   users=User.objects.all()
 
 #   return render(request,'users/userslist.html',{'users': users})
-
 # def messages(request):
 #   messages = Message.objects.all()
 
 
-def send_message(request):
+def send_message(request, group_name):
+    
+  if group_name == 'null':
+    print(group_name)
+    group_name = None
+    print(group_name)
+
     if request.method == 'POST' and request.user.is_authenticated:
         try:
             user = request.user
@@ -113,6 +118,34 @@ def send_message(request):
             to_user_input = request.POST.get('message_to', '')
             is_anonim = request.POST.get('is_anonim', 'false') == 'true'
             picture = request.FILES.get('image')
+            
+            if group_name != None:
+              try:
+                group = MyGroup.objects.get(name=group_name)  # Получаем объект группы
+              except MyGroup.DoesNotExist:
+                return JsonResponse({'status': 'error', 'message': 'Группа не найдена'}, status=404)
+
+              # group_name передается в HTML из get_messages_html, затем из form DATA - методом в JS в обработчик клавиши отправки сообщений,
+              # уже из этого обработчика через URL сюда
+
+              # Требуется проверка, что пользователь состоит в группе для которой отпарвлено сообщение,
+              # так как иначе название группы можно подставить в URL вручную
+
+              has_groups = UserInGroup.objects.filter(user=request.user, group__name = group_name).exists()
+            else:
+               has_groups = True # Если группа None, то есть нет группы, то сообщение можно отправить
+               group = None
+               
+
+            print('has_groups = '+ str(has_groups))
+            print(str(group_name))
+
+            if not has_groups:
+               print('Не отправить! так как has_groups = '+ str(has_groups))
+               return JsonResponse({'status': 'error', 'message': 'Вы не состоите в группе и не можете отправить сообщение'}, status=404)
+            
+           
+
 
             if to_user_input != "" and to_user_input != 'Инкогнито':
               to_user = User.objects.get(username=to_user_input)
@@ -124,11 +157,13 @@ def send_message(request):
                 from_user=user,
                 to_user=to_user,
                 is_anonim=is_anonim,
-                picture=picture
+                picture=picture,
+                group=group
             )
 
            
 
+            print("Добрались до users.views.py строка 163")
             return JsonResponse({
                
                 'status': 'success',
@@ -166,9 +201,47 @@ def delete_message(request, message_id):
 
 
 # рендерит HTML с использованием шаблона messages_partial.html
+# @login_required(login_url='signin')
+# def get_messages_html(request):
+    
+#     messages = Message.objects.all()
+#     context = {'messages': messages}
+#     html = render_to_string('partials/messages_partial.html', context, request=request)
+#     return HttpResponse(html)
+
 @login_required(login_url='signin')
 def get_messages_html(request):
-    messages = Message.objects.all()
-    context = {'messages': messages}
-    html = render_to_string('partials/messages_partial.html', context, request=request)
-    return HttpResponse(html)
+    
+
+  # Получаем названия групп в которых состоит пользователь(в виде строк)
+  group_names = list(MyGroup.objects.filter(
+    useringroup__user=request.user
+  ).values_list('name', flat=True))
+  # Пример результата: ['Группа 1', 'Группа 2']
+
+  # ВРЕМЕННОЕ РЕШЕНИЕ ДЛЯ ГРУППЫ bigfamily 
+  # Пока нас интересует только единственная группа!!!
+  # Пояснение: Сейчас, если ползователь авторизовался, но не состоит в группе
+  # bigfamily он видит сообщения не относящиеся к ней. 
+  # Если пользователь в группе bigfamily, то видит сообщения только в этой группе.
+
+  i_find = False
+  group_name_c = None
+
+  for group_name in group_names:
+     if group_name == 'bigfamily':  
+      messages = Message.objects.filter(group__name = group_name)
+      i_find = True
+      group_name_c = group_name
+      break
+
+  if not i_find:
+    messages = Message.objects.filter(group = None)
+    group_name_c = None
+      
+  print(f"group_name в get_messages_html: {group_name_c}")
+
+  context = {'messages': messages, 'group_name':group_name_c}
+  html = render_to_string('partials/messages_partial.html', context, request=request)
+  return HttpResponse(html)
+  

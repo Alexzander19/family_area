@@ -85,12 +85,11 @@
           </div> <!-- /div class="col py-3" style="background-color: black;" id = "div-all-messages-in-chat" -->
         </div> <!-- /div class="row flex-grow-1 overflow-y-auto" style="background-color: black;" -->
         <!-- Конец Область сообщений -->
-
-
+        <!-- форма отправки сообщения -->
 
         {% if user.is_authenticated %}
-        <!-- Форма ввода сообщения  -->
-        <form class="input-group mt-3" method="post" id="chatForm" enctype="multipart/form-data"> <!-- Форма ввода сообщения  -->
+        <!-- Форма отправки сообщения  data-custom-arg='bigfamily'-->
+        <form  class="input-group mt-3" method="post" id="chatForm" enctype="multipart/form-data" > <!-- Форма отправки сообщения  -->
           {% csrf_token %}
           
           <div class="row bg-black border-top py-3 " style="padding-right: 0;">
@@ -121,11 +120,11 @@
                 
                   <!-- <label for="input_message">Введите сообщение:</label> -->
                   <input type="text" name ="message" class="form-control " placeholder="Введите сообщение..." aria-label="message">
-                  <button class="btn btn-primary" type="submit">     
+                  <button class="btn btn-primary" type="submit" data-arg="{{group_name}}">     
                     <img src="{% static 'img/system/send_mail.png' %}"  width="30" height="30" alt="send">
                   </button>
                 </div>
-              </div>
+              </div>  
             </div>
             
             <!-- Отправить инкогнито-->
@@ -140,7 +139,9 @@
         </form>
        
         {% endif %}
-  
+
+
+        
       </div> <!-- /div class="container-fluid vh-100 d-flex flex-column" -->
     </div> <!-- /div class="col-12 col-md-4" -->
     <!--КОНЕЦ Колонка чата-->
