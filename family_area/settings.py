@@ -34,7 +34,7 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))  # Загружает перемен
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['185.11.135.201']
+ALLOWED_HOSTS = ['185.11.135.201', 'alexzander19-family-area-9ca2.twc1.net']
 
 
 # Application definition
