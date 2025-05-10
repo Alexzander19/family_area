@@ -147,4 +147,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Для размещения на TIME WEB:
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# Или укажите абсолютный путь, например:
+# STATIC_ROOT = '/home/admin/family_area/static/'
+
 
