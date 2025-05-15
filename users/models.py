@@ -65,7 +65,7 @@ class User(AbstractUser):
     if self.age_now != None:
       age = str(self.age_now) + ' лет'
 
-    return self.username + ' ' + age
+    return self.first_name + ' ' + age
   
 
 class UserInGroup(models.Model):

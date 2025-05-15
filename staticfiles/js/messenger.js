@@ -7,7 +7,7 @@
 // и размещает фото сверху над вводом сообщения (выше span сообщение для)
 //<img onclick ="upload_image()">
 
-const GROUP_NAME = null;
+let GROUP_NAME = null;
 
 function upload_image(){
 
@@ -142,7 +142,7 @@ window.addEventListener('load', function() {
     const csrftoken = getCookie('csrftoken');
     // const group_name = this.dataset.customArg;
     // const group_name = e.submitter.dataset.arg;
-    const group_name = GROUP_NAME
+    let group_name = GROUP_NAME
 
     try {
       const response = await fetch("/users/send_message/" + group_name + '/', {
@@ -197,6 +197,15 @@ document.addEventListener('click', () => {
       menu.style.display = 'none';
   });
 });
+
+function set_global_group_name(group_name) {
+  
+  GROUP_NAME = group_name;
+  console.log('GROUP_NAME УСТАНОВЛЕНА В ', GROUP_NAME)
+
+}
+
+
 
 refreshMessages()
 //Обновлять сообщения каждые 5 секунд

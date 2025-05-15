@@ -105,81 +105,73 @@ def signout(request):
 
 
 def send_message(request, group_name):
+
+  print(f'group_name in send_message = {group_name}')
     
   if group_name == 'null':
     print(group_name)
     group_name = None
     print(group_name)
 
-    if request.method == 'POST' and request.user.is_authenticated:
-        try:
-            user = request.user
-            message = request.POST.get('message', '')
-            to_user_input = request.POST.get('message_to', '')
-            is_anonim = request.POST.get('is_anonim', 'false') == 'true'
-            picture = request.FILES.get('image')
-            
-            if group_name != None:
-              try:
-                group = MyGroup.objects.get(name=group_name)  # Получаем объект группы
-              except MyGroup.DoesNotExist:
-                return JsonResponse({'status': 'error', 'message': 'Группа не найдена'}, status=404)
-
-              # group_name передается в HTML из get_messages_html, затем из form DATA - методом в JS в обработчик клавиши отправки сообщений,
-              # уже из этого обработчика через URL сюда
-
-              # Требуется проверка, что пользователь состоит в группе для которой отпарвлено сообщение,
-              # так как иначе название группы можно подставить в URL вручную
-
-              has_groups = UserInGroup.objects.filter(user=request.user, group__name = group_name).exists()
-            else:
-               has_groups = True # Если группа None, то есть нет группы, то сообщение можно отправить
-               group = None
-               
-
-            print('has_groups = '+ str(has_groups))
-            print(str(group_name))
-
-            if not has_groups:
-               print('Не отправить! так как has_groups = '+ str(has_groups))
-               return JsonResponse({'status': 'error', 'message': 'Вы не состоите в группе и не можете отправить сообщение'}, status=404)
-            
-           
-
-
-            if to_user_input != "" and to_user_input != 'Инкогнито':
-              to_user = User.objects.get(username=to_user_input)
-            else:
-              to_user = None
-
-            new_message = Message.objects.create(
-                message=message,
-                from_user=user,
-                to_user=to_user,
-                is_anonim=is_anonim,
-                picture=picture,
-                group=group
-            )
-
-           
-
-            print("Добрались до users.views.py строка 163")
-            return JsonResponse({
-               
-                'status': 'success',
-                # Так как сообщения печатаются все заново, то данные ниже не используются
-                'message': new_message.message,
-                'time': new_message.time_send.strftime('%H:%M'),
-                'username': 'Инкогнито' if new_message.is_anonim else new_message.from_user.username,
-                'avatar': new_message.from_user.avatar_pic.url if not new_message.is_anonim else '/static/img/avatar/anonim.png',
-                'picture': new_message.picture.url if new_message.picture else '',
-                'is_owner': request.user == new_message.from_user
-            })
-            
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+  if request.method == 'POST' and request.user.is_authenticated:
+      try:
+          user = request.user
+          message = request.POST.get('message', '')
+          to_user_input = request.POST.get('message_to', '')
+          is_anonim = request.POST.get('is_anonim', 'false') == 'true'
+          picture = request.FILES.get('image')
+          
+          if group_name != None:
+            try:
+              group = MyGroup.objects.get(name=group_name)  # Получаем объект группы
+            except MyGroup.DoesNotExist:
+              return JsonResponse({'status': 'error', 'message': 'Группа не найдена'}, status=404)
+            # group_name передается в HTML из get_messages_html, затем из form DATA - методом в JS в обработчик клавиши отправки сообщений,
+            # уже из этого обработчика через URL сюда
+            # Требуется проверка, что пользователь состоит в группе для которой отпарвлено сообщение,
+            # так как иначе название группы можно подставить в URL вручную
+            has_groups = UserInGroup.objects.filter(user=request.user, group__name = group_name).exists()
+          else:
+             has_groups = True # Если группа None, то есть нет группы, то сообщение можно отправить
+             group = None
+             
+          print('has_groups = '+ str(has_groups))
+          print(str(group_name))
+          if not has_groups:
+             print('Не отправить! так как has_groups = '+ str(has_groups))
+             return JsonResponse({'status': 'error', 'message': 'Вы не состоите в группе и не можете отправить сообщение'}, status=404)
+          
+         
+          if to_user_input != "" and to_user_input != 'Инкогнито':
+            to_user = User.objects.get(username=to_user_input)
+          else:
+            to_user = None
+          new_message = Message.objects.create(
+              message=message,
+              from_user=user,
+              to_user=to_user,
+              is_anonim=is_anonim,
+              picture=picture,
+              group=group
+          )
+         
+          print("Добрались до users.views.py строка 163")
+          return JsonResponse({
+             
+              'status': 'success',
+              # Так как сообщения печатаются все заново, то данные ниже не используются
+              'message': new_message.message,
+              'time': new_message.time_send.strftime('%H:%M'),
+              'username': 'Инкогнито' if new_message.is_anonim else new_message.from_user.username,
+              'avatar': new_message.from_user.avatar_pic.url if not new_message.is_anonim else '/static/img/avatar/anonim.png',
+              'picture': new_message.picture.url if new_message.picture else '',
+              'is_owner': request.user == new_message.from_user
+          })
+          
+      except Exception as e:
+          return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
     
-    return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=403)
+  return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=403)
 
 
 

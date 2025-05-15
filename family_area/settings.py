@@ -33,7 +33,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = os.getenv('DEBUG') == 'True'
 
-ALLOWED_HOSTS = ['147.45.147.244',]
+ALLOWED_HOSTS = ['147.45.147.244','127.0.0.1']
 
 
 # Application definition

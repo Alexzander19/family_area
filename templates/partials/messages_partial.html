@@ -1,23 +1,13 @@
 {% load static %}
 
-<!-- Область сообщений -->
-<!-- <div class="row flex-grow-1 overflow-y-auto" style="background-color: black;">
-    <div class="col py-3" style="background-color: black;" id = "div-all-messages-in-chat"> -->
-        <!-- Сообщение от других -->
-
-<script>
-  // Передаем данные из Django-контекста в глобальную переменную
-  const GROUP_NAME = {group_name} ;
-</script>
 
 
       {% for message in messages %}
 
-        <div div-message-id = "{{message.id}}" class="row mb-3  
+        <div onclick="set_global_group_name('{{ group_name }}')" div-message-id = "{{message.id}}" class="row mb-3  
           {% if user.username == message.to_user.username %} 
           bg-primary rounded-3 
           {% endif %}" >
-
 
             <div class="col-auto" >
                 
@@ -81,6 +71,8 @@
         </div>
 
         {% endfor %}
+
+       
 
 
 
