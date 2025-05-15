@@ -9,6 +9,11 @@
 
 let GROUP_NAME = null;
 
+
+
+
+
+
 function upload_image(){
 
   document.getElementById('fileInput').click();
@@ -142,7 +147,8 @@ window.addEventListener('load', function() {
     const csrftoken = getCookie('csrftoken');
     // const group_name = this.dataset.customArg;
     // const group_name = e.submitter.dataset.arg;
-    let group_name = GROUP_NAME
+    let group_name = document.getElementById('group_name').value
+
 
     try {
       const response = await fetch("/users/send_message/" + group_name + '/', {
@@ -181,6 +187,10 @@ function refreshMessages() {
         container.innerHTML = html;
     })
     .catch(error => console.error('Error:', error));
+
+  // Сохранение в глобальной переменной GROUP_NAME
+  // значения - имени текущей группы
+
 }
 
 function replyToMessage(username) {
@@ -207,8 +217,12 @@ function set_global_group_name(group_name) {
 
 
 
+
+
+
+
 refreshMessages()
 //Обновлять сообщения каждые 5 секунд
-setInterval(refreshMessages, 5000);
+// setInterval(refreshMessages, 5000);
 
 

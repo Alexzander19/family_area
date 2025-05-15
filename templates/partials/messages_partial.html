@@ -1,10 +1,27 @@
+
+
 {% load static %}
 
+
+<script>
+  // Передаем значение из Django в JavaScript
+  
+</script>
+
+
+
+
+    <div id = "chat-container">
+      <input id="group_name" hidden="true" value="{{group_name}}">
+
+      
+
+      
 
 
       {% for message in messages %}
 
-        <div onclick="set_global_group_name('{{ group_name }}')" div-message-id = "{{message.id}}" class="row mb-3  
+        <div  div-message-id = "{{message.id}}" class="row mb-3  
           {% if user.username == message.to_user.username %} 
           bg-primary rounded-3 
           {% endif %}" >
@@ -64,13 +81,17 @@
                       <button onclick="replyToMessage('{{ message.from_user.username }}')">↩️ Ответить</button>
                     </div>
 
+                  
+
 
 
                 </div>
             </div>
         </div>
 
-        {% endfor %}
+      {% endfor %}
+
+    </div>
 
        
 

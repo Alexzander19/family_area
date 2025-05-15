@@ -229,7 +229,7 @@ def get_messages_html(request):
 
   if not i_find:
     messages = Message.objects.filter(group = None)
-    group_name_c = None
+    group_name_c = 'null'
       
   print(f"group_name в get_messages_html: {group_name_c}")
 

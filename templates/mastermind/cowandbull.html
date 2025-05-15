@@ -6,6 +6,8 @@
 {% block content %}
 
 
+
+
 <div class="container-fluid"> <!-- Организация таблицы -->
   <div class="row"> <!-- ОСНОВНАЯ строка-->
     <!-- *** Колонка игры --- Колонка игры --- Колонка игры --- Колонка игры --- Колонка игры *** -->
@@ -121,7 +123,7 @@
                   <input type="file" id="fileInput"   name="image"   accept="image/*"   hidden  onchange="previewImage(this); ">
                 
                   <!-- <label for="input_message">Введите сообщение:</label> -->
-                  <input type="text" name ="message" class="form-control " placeholder="Введите сообщение..." aria-label="message">
+                  <input  type="text" name ="message" class="form-control " placeholder="Введите сообщение..." aria-label="message">
                   <button class="btn btn-primary" type="submit" data-arg="{{group_name}}">     
                     <img src="{% static 'img/system/send_mail.png' %}"  width="30" height="30" alt="send">
                   </button>
