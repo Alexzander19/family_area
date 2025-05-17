@@ -208,15 +208,6 @@ document.addEventListener('click', () => {
   });
 });
 
-function set_global_group_name(group_name) {
-  
-  GROUP_NAME = group_name;
-  console.log('GROUP_NAME УСТАНОВЛЕНА В ', GROUP_NAME)
-
-}
-
-
-
 
 
 
