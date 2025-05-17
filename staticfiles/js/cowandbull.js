@@ -336,7 +336,7 @@ function addRow(id,userNUM, cowBull){
 // Контроль ввода.
 // устаревшее. не во всех браузерах поддерживается. userInput.onkeypress = function(e){ // срабатывает только для символьных клавиш прм нажатии, пока держим
 
-userInput.addEventListener("keypress", function(e) {
+userInput.addEventListener("keydown", function(e) {
 
 	console.log("Клавиша нажата:", e.key);
 
