@@ -76,6 +76,7 @@ function startGame() {
         // Задаем длину поля ввода числа пользователем.
         // Имя класса, который отвечает за длинну поля ввода в зависимости от number - количества цифр
     inputSize.className += " user-input-naum-width-" + count_numbers
+	inputSize.maxLength = count_numbers
     
 }
 
