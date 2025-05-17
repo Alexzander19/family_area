@@ -331,14 +331,10 @@ function addRow(id,userNUM, cowBull){
 }
 
 
+// Контроль ввода. Вызывается отдельными событиями для мобилки или ПК 
+function inputContol(e){
 
-
-// Контроль ввода.
-// устаревшее. не во всех браузерах поддерживается. userInput.onkeypress = function(e){ // срабатывает только для символьных клавиш прм нажатии, пока держим
-
-userInput.addEventListener("keydown", function(e) {
-
-	console.log("Клавиша нажата:", e.key);
+console.log("Клавиша нажата:", e.key);
 
 
 	let indexOfCopy;
@@ -395,7 +391,22 @@ userInput.addEventListener("keydown", function(e) {
 		 // e.preventDefault()
 
 
+}
+
+
+
+// устаревшее. не во всех браузерах поддерживается. userInput.onkeypress = function(e){ // срабатывает только для символьных клавиш прм нажатии, пока держим
+// Для мобильных
+userInput.addEventListener("input", function(e) {
+
+	inputContol(e)
 	
+			
+});
+// для ПК
+userInput.addEventListener("keydown", function(e) {
+
+	inputContol(e)
 			
 });
 
