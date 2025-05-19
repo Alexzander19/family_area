@@ -267,18 +267,7 @@ function cowBullUserTry(){
 
 function addRow(id,userNUM, cowBull){
 
-								// <div id = "div-table-interactive" >
-								//   <div class="table-row">
-								//     <div class="table-col">ЧИСЛО</div>
-								//     <div class="table-col">КОР / БЫК</div>
-								//     <div class="table-col">ШАГ</div>
-								//   </div>
-								//   <div class="table-row" >
-								//     <div class="table-col">1234</div>
-								//     <div class="table-col">1 / 2</div>
-								//     <div class="table-col">1</div>
-								//   </div>
-
+								
 		// Создаем элемент <img> для замены "кор"
 		let cowImage = document.createElement("img");
 		cowImage.src = '/static/img/system/cow.png'; 
@@ -398,7 +387,8 @@ console.log("Клавиша нажата:", e.key);
 
 // устаревшее. не во всех браузерах поддерживается. userInput.onkeypress = function(e){ // срабатывает только для символьных клавиш прм нажатии, пока держим
 // Для мобильных
-userInput.addEventListener("input", function(e) {
+// onchange
+userInput.addEventListener("change", function(e) {
 
 	inputContol(e)
 	
